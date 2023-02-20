@@ -26,13 +26,15 @@ public class Discord : IDisposable
 	internal static string SteamPublicKey { get; set; }
 	internal static string SteamPublisherKey { get; set; }
 	internal static int SteamAppId { get; set; }
+	internal static string GitHubApiKey { get; set; }
 	internal static Dictionary<string, AppBuild> AppBuilds { get; set; } = new();
 
-	public Discord(string bot_token, string steam_public, string steam_publisher, int steam_app_id)
+	public Discord(string bot_token, string steam_public, string steam_publisher, int steam_app_id, string github_api)
 	{
 		SteamPublicKey = steam_public;
 		SteamPublisherKey = steam_publisher;
 		SteamAppId = steam_app_id;
+		GitHubApiKey = github_api;
 
 		Configuration = new()
 		{
