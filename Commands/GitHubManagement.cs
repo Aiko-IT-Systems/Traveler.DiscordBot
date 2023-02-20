@@ -6,6 +6,8 @@ using DisCatSharp.Entities;
 using DisCatSharp.Enums;
 using DisCatSharp.Interactivity.Extensions;
 
+using Microsoft.VisualBasic;
+
 using Newtonsoft.Json;
 
 using System.Net.Http.Headers;
@@ -76,6 +78,22 @@ internal class GitHubManagement : ApplicationCommandsModule
 			DiscordAnnounce = modal_result.First(x => x.Key == "announce_on_discord").Value
 		});
 
+		var confirmation = BuildConfirmationEmbed(github_workflow_data);
+		var confirmation_message = await wait_for_modal.Result.Interaction.EditOriginalResponseAsync(confirmation);
+
+		var wait_for_button = await ctx.Client.GetInteractivity().WaitForButtonAsync(confirmation_message, x => x.User.Id == ctx.User.Id && x.Id == confirmation.Components[0].Components.First().CustomId, TimeSpan.FromSeconds(30));
+		if (wait_for_button.TimedOut)
+		{
+			await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("Button timed out!").AsEphemeral(true));
+			return;
+		}
+		await wait_for_button.Result.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage);
+
+		await ShowLoadingEmbed(wait_for_modal.Result.Interaction);
+		await Task.Delay(5000);
+		await ShowFuckedEmbed(wait_for_modal.Result.Interaction);
+		await Task.Delay(7000);
+
 		string api_endpoint = "https://api.github.com/repos/Aiko-IT-Systems/Traveler/actions/workflows/steam_deploy.yml/dispatches";
 		HttpClient rest = new();
 		rest.DefaultRequestHeaders.UserAgent.Add(ctx.Client.RestClient.DefaultRequestHeaders.UserAgent.First());
@@ -86,7 +104,7 @@ internal class GitHubManagement : ApplicationCommandsModule
 		var string_content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 		var result = await rest.PostAsync(api_endpoint, string_content);
 		var response = await result.Content.ReadAsStringAsync();
-		await wait_for_modal.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent($"{Formatter.MaskedUrl("Workflow", new Uri("https://github.com/Aiko-IT-Systems/Traveler/actions/workflows/steam_deploy.yml"))} trigger success state: {result.IsSuccessStatusCode} ({result.StatusCode})\n\n{response}"));
+		await wait_for_modal.Result.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder().WithContent($"Just kidding {DiscordEmoji.FromGuildEmote(ctx.Client, 1077320163675865168)}\n\n{Formatter.MaskedUrl("Workflow", new Uri("https://github.com/Aiko-IT-Systems/Traveler/actions/workflows/steam_deploy.yml"))} trigger success state: {result.IsSuccessStatusCode} ({result.StatusCode})\n\n{response}"));
 	}
 
 	private static DiscordInteractionModalBuilder BuildWorkflowModal()
@@ -103,4 +121,49 @@ internal class GitHubManagement : ApplicationCommandsModule
 		builder.AddTextComponents(components.ToArray());
 		return builder;
 	}
+
+	private static DiscordWebhookBuilder BuildConfirmationEmbed(WorkflowExecuteBody body)
+	{
+		DiscordWebhookBuilder builder = new();
+		builder.AddComponents(new DiscordButtonComponent(ButtonStyle.Danger, label: "Execute"));
+		DiscordEmbedBuilder embedBuilder = new();
+		embedBuilder.WithTitle("Execute Workflow with following data?");
+		embedBuilder.WithDescription(Formatter.Bold("Description:") + "\n\n" + body.Inputs!.SteamBuildDescription);
+		embedBuilder.AddField(new DiscordEmbedField("GitHub Reference", body.Ref));
+		embedBuilder.AddField(new DiscordEmbedField("Version", body.Inputs!.BuildVersion));
+		embedBuilder.AddField(new DiscordEmbedField("Steam Branch", body.Inputs!.SteamBranch));
+		embedBuilder.AddField(new DiscordEmbedField("Website Upload", body.Inputs!.WebsiteUpload));
+		embedBuilder.AddField(new DiscordEmbedField("Discord Announcement", body.Inputs!.DiscordAnnounce));
+		builder.AddEmbed(embedBuilder.Build());
+		return builder;
+	}
+
+	private static async Task ShowLoadingEmbed(DiscordInteraction interaction)
+	{
+		DiscordEmbedBuilder builder = new();
+		builder.WithTitle("Please wait..");
+		builder.WithImageUrl(LoadingGif);
+		await interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().AddEmbed(builder.Build()));
+	}
+
+	private static async Task ShowFuckedEmbed(DiscordInteraction interaction)
+	{
+		DiscordEmbedBuilder builder = new();
+		builder.WithTitle("Well.....");
+		builder.WithDescription("You fucked the infrastructure (probably again)");
+		builder.WithImageUrl(FuckedGifs[new Random().Next(0, 6)]);
+		await interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().AddEmbed(builder.Build()));
+	}
+
+	private const string LoadingGif = "https://media.tenor.com/3_2YkmawmaoAAAAM/waiting-spinning.gif";
+	private static readonly List<string> FuckedGifs = new()
+	{
+		"https://media.tenor.com/W9PJcPKvftwAAAAC/jan-brummer-fuck.gif",
+		"https://media.tenor.com/SzfO_CqZSRwAAAAC/chicken-chicken-bro.gif",
+		"https://media.tenor.com/h4n4Y_HfjhMAAAAC/haha-bongo-cat.gif",
+		"https://media.tenor.com/bGCuW8uql2kAAAAC/office-server.gif",
+		"https://media.tenor.com/qg324pNzm50AAAAC/server-is-fine-burn.gif",
+		"https://media.tenor.com/ZIzIjb_wvEoAAAAC/face-palm.gif",
+		"https://media.tenor.com/USUVjH4Ah8MAAAAC/anime-freaking-out.gif"
+	};
 }
