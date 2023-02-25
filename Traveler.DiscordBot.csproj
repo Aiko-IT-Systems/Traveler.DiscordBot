@@ -17,10 +17,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DisCatSharp" Version="10.3.3-nightly-016" />
-    <PackageReference Include="DisCatSharp.ApplicationCommands" Version="10.3.3-nightly-016" />
-    <PackageReference Include="DisCatSharp.Common" Version="10.3.3-nightly-016" />
-    <PackageReference Include="DisCatSharp.Interactivity" Version="10.3.3-nightly-016" />
+    <PackageReference Include="DisCatSharp" Version="10.3.3-nightly-017" />
+    <PackageReference Include="DisCatSharp.ApplicationCommands" Version="10.3.3-nightly-017" />
+    <PackageReference Include="DisCatSharp.Common" Version="10.3.3-nightly-017" />
+    <PackageReference Include="DisCatSharp.Interactivity" Version="10.3.3-nightly-017" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
 
