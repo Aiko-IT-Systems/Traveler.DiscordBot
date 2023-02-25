@@ -1,4 +1,6 @@
-﻿using DisCatSharp;
+﻿using System.Reflection;
+
+using DisCatSharp;
 using DisCatSharp.ApplicationCommands;
 using DisCatSharp.Enums;
 using DisCatSharp.Interactivity;
@@ -7,8 +9,6 @@ using DisCatSharp.Interactivity.EventHandling;
 using DisCatSharp.Interactivity.Extensions;
 
 using Microsoft.Extensions.Logging;
-
-using System.Reflection;
 
 using Traveler.DiscordBot.Entities.Steam;
 

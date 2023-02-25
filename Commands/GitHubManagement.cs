@@ -1,4 +1,6 @@
-﻿using DisCatSharp;
+﻿using System.Net.Http.Headers;
+
+using DisCatSharp;
 using DisCatSharp.ApplicationCommands;
 using DisCatSharp.ApplicationCommands.Attributes;
 using DisCatSharp.ApplicationCommands.Context;
@@ -6,11 +8,7 @@ using DisCatSharp.Entities;
 using DisCatSharp.Enums;
 using DisCatSharp.Interactivity.Extensions;
 
-using Microsoft.VisualBasic;
-
 using Newtonsoft.Json;
-
-using System.Net.Http.Headers;
 
 using Traveler.DiscordBot.Entities.GitHub;
 

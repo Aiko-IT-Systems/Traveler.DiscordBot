@@ -158,7 +158,7 @@ internal class SteamManagement : ApplicationCommandsModule
 	{
 		await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
 		string api_endpoint = "https://partner.steam-api.com/ISteamApps/SetAppBuildLive/v1/";
-		
+
 		var data = new List<KeyValuePair<string, string>>()
 		{
 			new KeyValuePair<string, string>("key", Discord.SteamPublisherKey),
@@ -191,7 +191,7 @@ internal class SteamCommitAutocomplete : IAutocompleteProvider
 				var take_25 = Discord.AppBuilds.Values.Where(x => x.Description.ToLower().Contains(((string)ctx.FocusedOption.Value).ToLower()) || x.BuildId.ToString().ToLower().Contains(((string)ctx.FocusedOption.Value).ToLower()));
 				if (!take_25.Any())
 					return Array.Empty<DiscordApplicationCommandAutocompleteChoice>().ToList();
-				else if(take_25.Any())
+				else if (take_25.Any())
 				{
 					var collection = take_25.Take(25).Select(x => new DiscordApplicationCommandAutocompleteChoice($"{x.BuildId} - {x.Description}", x.BuildId.ToString())).ToList();
 					return collection;
