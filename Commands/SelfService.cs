@@ -1,5 +1,4 @@
-﻿
-using DisCatSharp;
+﻿using DisCatSharp;
 using DisCatSharp.ApplicationCommands;
 using DisCatSharp.ApplicationCommands.Attributes;
 using DisCatSharp.ApplicationCommands.Context;
@@ -11,6 +10,7 @@ using LZStringCSharp;
 using Microsoft.Extensions.Logging;
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 using Traveler.DiscordBot.Entities;
 
@@ -58,62 +58,69 @@ internal class SelfService : ApplicationCommandsModule
 	)
 	{
 		await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral().WithContent("Processing.."));
-		Dictionary<string, string> fileContents = new();
-		Dictionary<int, DiscordAttachment?> attachments = new(15)
-		{
-			{ 0, globalSave},
-			{ 1, gameSave1 },
-			{ 2, gameSave2 },
-			{ 3, gameSave3 },
-			{ 4, gameSave4 },
-			{ 5, gameSave5 },
-			{ 6, gameSave6 },
-			{ 7, gameSave7 },
-			{ 8, gameSave8 },
-			{ 9, gameSave9 },
-			{ 10, gameSave10 },
-			{ 11, gameSave11 },
-			{ 12, gameSave12 },
-			{ 13, gameSave13 },
-			{ 14, gameSave14 },
-			{ 15, gameSave15 },
-			{ 16, gameSave16 },
-			{ 17, gameSave17 },
-			{ 18, gameSave18 },
-			{ 19, gameSave19 },
-			{ 20, gameSave20 },
-			{ 21, gameSave21 },
-			{ 22, gameSave22 },
-			{ 23, gameSave23 },
-			{ 24, gameSave24 }
-		};
-
-		foreach(var save in attachments.Where(a => a.Value != null))
-		{
-			var stream = await ctx.Client.RestClient.GetStreamAsync(save.Value!.Url);
-			using(StreamReader reader = new(stream))
-			{
-				var content = await reader.ReadToEndAsync();
-				switch (save.Key)
-				{
-					case 0:
-						fileContents.Add("global.rpgsave", content);
-						break;
-					default:
-						fileContents.Add($"game{save.Key}.rpgsave", content);
-						break;
-				}
-				reader.Close();
-			}
-			stream.Close();
-		}
-
 
 		try
 		{
+			Dictionary<string, string> fileContents = new();
+			Dictionary<int, decimal> playtimeInfos = new();
+			Dictionary<int, DiscordAttachment?> attachments = new(15)
+			{
+				{ 0, globalSave },
+				{ 1, gameSave1 },
+				{ 2, gameSave2 },
+				{ 3, gameSave3 },
+				{ 4, gameSave4 },
+				{ 5, gameSave5 },
+				{ 6, gameSave6 },
+				{ 7, gameSave7 },
+				{ 8, gameSave8 },
+				{ 9, gameSave9 },
+				{ 10, gameSave10 },
+				{ 11, gameSave11 },
+				{ 12, gameSave12 },
+				{ 13, gameSave13 },
+				{ 14, gameSave14 },
+				{ 15, gameSave15 },
+				{ 16, gameSave16 },
+				{ 17, gameSave17 },
+				{ 18, gameSave18 },
+				{ 19, gameSave19 },
+				{ 20, gameSave20 },
+				{ 21, gameSave21 },
+				{ 22, gameSave22 },
+				{ 23, gameSave23 },
+				{ 24, gameSave24 }
+			};
+
+			foreach(var save in attachments.Where(a => a.Value != null))
+			{
+				var stream = await ctx.Client.RestClient.GetStreamAsync(save.Value!.Url);
+				using(StreamReader reader = new(stream))
+				{
+					var content = await reader.ReadToEndAsync();
+					var decoded = LZString.DecompressFromBase64(content);
+					var data = save.Key == 0 ? null : JsonConvert.DeserializeObject<JObject>(decoded, new JsonSerializerSettings() { 
+						NullValueHandling = NullValueHandling.Include,
+						Error = Handler
+					});
+					switch (save.Key)
+					{
+						case 0:
+							fileContents.Add("global.rpgsave", content);
+							break;
+						default:
+							fileContents.Add($"game{save.Key}.rpgsave", content);
+							playtimeInfos.Add(save.Key, data!["system"]!["_framesOnSave"]!.ToObject<decimal>());
+							break;
+					}
+					reader.Close();
+				}
+				stream.Close();
+			}
+
 			List<GlobalSaveEntry?> globalEntryData = new();
 			foreach (var saveData in attachments.OrderBy(fc => fc.Key))
-				globalEntryData.Add(saveData.Key == 0 || saveData.Value == null ? null : new GlobalSaveEntry());
+				globalEntryData.Add(saveData.Key == 0 || saveData.Value == null ? null : new GlobalSaveEntry(CalculatePlaytime(playtimeInfos[saveData.Key])));
 
 			var newGlobalSaveString = JsonConvert.SerializeObject(globalEntryData, Formatting.None);
 			var newGlobalSave = LZString.CompressToBase64(newGlobalSaveString);
@@ -131,6 +138,20 @@ internal class SelfService : ApplicationCommandsModule
 			ctx.Client.Logger.LogDebug("{msg}", ex.Message);
 			ctx.Client.Logger.LogDebug("{stack}", ex.StackTrace);
 		}
+	}
 
+	private void Handler(object? sender, Newtonsoft.Json.Serialization.ErrorEventArgs e)
+	{
+		Console.WriteLine("Error in: " + e.ErrorContext.Path);
+		Console.WriteLine("Object: " + e.CurrentObject?.ToString());
+	}
+
+	private string CalculatePlaytime(decimal value)
+	{
+		var frameCalculation = Math.Floor(value / 60);
+		var hour = Math.Floor(frameCalculation / 60 / 60);
+		var min = Math.Floor(frameCalculation / 60) % 60;
+		var sec = frameCalculation % 60;
+		return $"{hour:00}:{min:00}:{sec:00}";
 	}
 }

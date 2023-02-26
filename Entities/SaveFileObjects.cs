@@ -46,12 +46,17 @@ public class GlobalSaveEntry
 	/// hh:mm:ss
 	/// </summary>
 	[JsonProperty("playtime")]
-	public string Playtime = "00:00:01";
+	public string Playtime;
 
 	/// <summary>
 	/// Save timestamp, unix?
 	/// </summary>
 	[JsonProperty("timestamp")]
 	public long Timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
+
+	public GlobalSaveEntry(string playtime = "00:00:01")
+	{
+		Playtime = playtime;
+	}
 }
 
