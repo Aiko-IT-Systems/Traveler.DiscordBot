@@ -44,7 +44,17 @@ internal class SelfService : ApplicationCommandsModule
 		[Option("game11", "game11.rpgsave")] DiscordAttachment? gameSave11 = null,
 		[Option("game12", "game12.rpgsave")] DiscordAttachment? gameSave12 = null,
 		[Option("game13", "game13.rpgsave")] DiscordAttachment? gameSave13 = null,
-		[Option("game14", "game14.rpgsave")] DiscordAttachment? gameSave14 = null
+		[Option("game14", "game14.rpgsave")] DiscordAttachment? gameSave14 = null,
+		[Option("game15", "game15.rpgsave")] DiscordAttachment? gameSave15 = null,
+		[Option("game16", "game16.rpgsave")] DiscordAttachment? gameSave16 = null,
+		[Option("game17", "game17.rpgsave")] DiscordAttachment? gameSave17 = null,
+		[Option("game18", "game18.rpgsave")] DiscordAttachment? gameSave18 = null,
+		[Option("game19", "game19.rpgsave")] DiscordAttachment? gameSave19 = null,
+		[Option("game20", "game20.rpgsave")] DiscordAttachment? gameSave20 = null,
+		[Option("game21", "game21.rpgsave")] DiscordAttachment? gameSave21 = null,
+		[Option("game22", "game22.rpgsave")] DiscordAttachment? gameSave22 = null,
+		[Option("game23", "game23.rpgsave")] DiscordAttachment? gameSave23 = null,
+		[Option("game24", "game24.rpgsave")] DiscordAttachment? gameSave24 = null
 	)
 	{
 		await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral().WithContent("Processing.."));
@@ -65,7 +75,17 @@ internal class SelfService : ApplicationCommandsModule
 			{ 11, gameSave11 },
 			{ 12, gameSave12 },
 			{ 13, gameSave13 },
-			{ 14, gameSave14 }
+			{ 14, gameSave14 },
+			{ 15, gameSave15 },
+			{ 16, gameSave16 },
+			{ 17, gameSave17 },
+			{ 18, gameSave18 },
+			{ 19, gameSave19 },
+			{ 20, gameSave20 },
+			{ 21, gameSave21 },
+			{ 22, gameSave22 },
+			{ 23, gameSave23 },
+			{ 24, gameSave24 }
 		};
 
 		foreach(var save in attachments.Where(a => a.Value != null))
