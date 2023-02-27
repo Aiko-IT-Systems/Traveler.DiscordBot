@@ -20,7 +20,7 @@ namespace Traveler.DiscordBot.Commands;
 internal class SelfService : ApplicationCommandsModule
 {
 	[SlashCommand("help", "Self service help")]
-	public async Task SelfServiceHelp(InteractionContext ctx)
+	public static async Task SelfServiceHelp(InteractionContext ctx)
 	{
 		await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
 
@@ -28,7 +28,7 @@ internal class SelfService : ApplicationCommandsModule
 	}
 
 	[SlashCommand("fix_saves", "Fix save files not loading")]
-	public async Task FixGameFilesAsync(
+	public static async Task FixGameFilesAsync(
 		InteractionContext ctx,
 		[Option("global", "global.rpgsave")] DiscordAttachment globalSave,
 		[Option("game1", "game1.rpgsave")] DiscordAttachment? gameSave1 = null,
@@ -125,13 +125,11 @@ internal class SelfService : ApplicationCommandsModule
 			var newGlobalSaveString = JsonConvert.SerializeObject(globalEntryData, Formatting.None);
 			var newGlobalSave = LZString.CompressToBase64(newGlobalSaveString);
 			MemoryStream outStream = new();
-			using (StreamWriter writer = new(outStream))
-			{
-				await writer.WriteAsync(newGlobalSave);
-				await writer.FlushAsync();
-				outStream.Position = 0;
-				await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Replace your {Formatter.Italic("global.rpgsave")} file with the attached file.").AddFile("global.rpgsave", outStream));
-			}
+			using StreamWriter writer = new(outStream);
+			await writer.WriteAsync(newGlobalSave);
+			await writer.FlushAsync();
+			outStream.Position = 0;
+			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Replace your {Formatter.Italic("global.rpgsave")} file with the attached file.").AddFile("global.rpgsave", outStream));
 		}
 		catch (Exception ex)
 		{
@@ -140,13 +138,13 @@ internal class SelfService : ApplicationCommandsModule
 		}
 	}
 
-	private void Handler(object? sender, Newtonsoft.Json.Serialization.ErrorEventArgs e)
+	private static void Handler(object? sender, Newtonsoft.Json.Serialization.ErrorEventArgs e)
 	{
 		Console.WriteLine("Error in: " + e.ErrorContext.Path);
 		Console.WriteLine("Object: " + e.CurrentObject?.ToString());
 	}
 
-	private string CalculatePlaytime(decimal value)
+	private static string CalculatePlaytime(decimal value)
 	{
 		var frameCalculation = Math.Floor(value / 60);
 		var hour = Math.Floor(frameCalculation / 60 / 60);
