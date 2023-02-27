@@ -63,7 +63,7 @@ internal class SelfService : ApplicationCommandsModule
 		{
 			Dictionary<string, string> fileContents = new();
 			Dictionary<int, decimal> playtimeInfos = new();
-			Dictionary<int, DiscordAttachment?> attachments = new(15)
+			Dictionary<int, DiscordAttachment?> attachments = new(25)
 			{
 				{ 0, globalSave },
 				{ 1, gameSave1 },
