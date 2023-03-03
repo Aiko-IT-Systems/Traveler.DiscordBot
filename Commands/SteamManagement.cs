@@ -78,7 +78,7 @@ internal class SteamManagement : ApplicationCommandsModule
 	}
 
 	[SlashCommand("app_ownership", "ISteamUser/CheckAppOwnership")]
-	internal static async Task CheckAppOwnershipAsync(InteractionContext ctx, [Option("steam_user", "Steam user to check ownership for")] string? steam_user = null, [Option("steam_id", "Steam id to check ownership for")] long? steam_id = null)
+	internal static async Task CheckAppOwnershipAsync(InteractionContext ctx, [Option("steam_user", "Steam user to check ownership for")] string? steam_user = null, [Option("steam_id", "Steam id to check ownership for")] string? steam_id = null)
 	{
 		await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
 		string id;
@@ -94,8 +94,8 @@ internal class SteamManagement : ApplicationCommandsModule
 			}
 			id = vanityLookupResult!.Response.SteamId;
 		}
-		else if (steam_id.HasValue)
-			id = steam_id.Value.ToString();
+		else if (steam_id != null)
+			id = steam_id;
 		else
 		{
 			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Provide either steam_user or steam_id"));
