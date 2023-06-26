@@ -22,7 +22,7 @@
     <PackageReference Include="DisCatSharp.Common" Version="10.3.3-nightly-018" />
     <PackageReference Include="DisCatSharp.Interactivity" Version="10.3.3-nightly-018" />
     <PackageReference Include="LZStringCSharp" Version="1.4.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
 </Project>
