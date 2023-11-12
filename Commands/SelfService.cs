@@ -1,4 +1,4 @@
-﻿using DisCatSharp;
+using DisCatSharp;
 using DisCatSharp.ApplicationCommands;
 using DisCatSharp.ApplicationCommands.Attributes;
 using DisCatSharp.ApplicationCommands.Context;
@@ -129,7 +129,7 @@ internal class SelfService : ApplicationCommandsModule
 			await writer.WriteAsync(newGlobalSave);
 			await writer.FlushAsync();
 			outStream.Position = 0;
-			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Replace your {Formatter.Italic("global.rpgsave")} file with the attached file.").AddFile("global.rpgsave", outStream));
+			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Replace your {"global.rpgsave".Italic()} file with the attached file.").AddFile("global.rpgsave", outStream));
 		}
 		catch (Exception ex)
 		{
