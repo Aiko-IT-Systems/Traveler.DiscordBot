@@ -22,7 +22,7 @@ public sealed class WorkflowRuns
 	/// Defaults to 'main'.
 	/// </summary>
 	[JsonProperty("total_count")]
-	public int TotalCount { get; set; }
+	public long TotalCount { get; set; }
 
 	/// <summary>
 	/// The inputs for the workflow run.
@@ -40,7 +40,7 @@ public sealed class WorkflowRun
 	/// GitHub workflow run id.
 	/// </summary>
 	[JsonProperty("id")]
-	public int Id { get; set; }
+	public long Id { get; set; }
 
 	/// <summary>
 	/// GitHub workflow run name.
@@ -64,7 +64,7 @@ public sealed class WorkflowRun
 	/// GitHub workflow run number.
 	/// </summary>
 	[JsonProperty("run_number")]
-	public int RunNumber { get; set; }
+	public long RunNumber { get; set; }
 }
 
 /// <summary>

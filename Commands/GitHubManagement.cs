@@ -109,6 +109,8 @@ internal class GitHubManagement : ApplicationCommandsModule
 		if (result.IsSuccessStatusCode)
 		{
 			result.Dispose();
+			// Grace time for workflow run to register
+			await Task.Delay(TimeSpan.FromSeconds(20));
 			var apiRunsEndpoint = "https://api.github.com/repos/Aiko-IT-Systems/Traveler/actions/workflows/steam_deploy.yml/runs";
 			var res = await rest.GetAsync(apiRunsEndpoint);
 			var resJson = await res.Content.ReadAsStringAsync();
