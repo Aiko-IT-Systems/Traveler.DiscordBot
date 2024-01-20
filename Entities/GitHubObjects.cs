@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 
 namespace Traveler.DiscordBot.Entities.GitHub;
 
@@ -12,7 +12,65 @@ namespace Traveler.DiscordBot.Entities.GitHub;
 	Returns 204 on success.
  */
 
-public class WorkflowExecuteBody
+/// <summary>
+/// Represents a GitHub workflow runs response.
+/// </summary>
+public sealed class WorkflowRuns
+{
+	/// <summary>
+	/// The ref (commit hash or branch name) to execute the workflow with.
+	/// Defaults to 'main'.
+	/// </summary>
+	[JsonProperty("total_count")]
+	public int TotalCount { get; set; }
+
+	/// <summary>
+	/// The inputs for the workflow run.
+	/// </summary>
+	[JsonProperty("workflow_runs", NullValueHandling = NullValueHandling.Ignore)]
+	public List<WorkflowRun> Runs { get; set; } = [];
+}
+
+/// <summary>
+/// Represents a GitHub workflow run response.
+/// </summary>
+public sealed class WorkflowRun
+{
+	/// <summary>
+	/// GitHub workflow run id.
+	/// </summary>
+	[JsonProperty("id")]
+	public int Id { get; set; }
+
+	/// <summary>
+	/// GitHub workflow run name.
+	/// </summary>
+	[JsonProperty("name")]
+	public string Name { get; set; }
+
+	/// <summary>
+	/// GitHub workflow run url.
+	/// </summary>
+	[JsonProperty("html_url")]
+	public Uri HtmlUrl { get; set; }
+
+	/// <summary>
+	/// GitHub workflow run status.
+	/// </summary>
+	[JsonProperty("status")]
+	public string Status { get; set; }
+
+	/// <summary>
+	/// GitHub workflow run number.
+	/// </summary>
+	[JsonProperty("run_number")]
+	public int RunNumber { get; set; }
+}
+
+/// <summary>
+/// Represents a GitHub workflow execute body.
+/// </summary>
+public sealed class WorkflowExecuteBody
 {
 	/// <summary>
 	/// The ref (commit hash or branch name) to execute the workflow with.
@@ -39,7 +97,10 @@ public class WorkflowExecuteBody
 	}
 }
 
-public class WorkflowInputs
+/// <summary>
+/// Represents a GitHub workflow inputs.
+/// </summary>
+public sealed class WorkflowInputs
 {
 	/// <summary>
 	/// Build description.

@@ -1,5 +1,3 @@
-using System.Net.Http.Headers;
-
 using DisCatSharp;
 using DisCatSharp.ApplicationCommands;
 using DisCatSharp.ApplicationCommands.Attributes;
@@ -108,9 +106,26 @@ internal class GitHubManagement : ApplicationCommandsModule
 		var json = JsonConvert.SerializeObject(githubWorkflowData, Formatting.Indented);
 		var stringContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 		var result = await rest.PostAsync(apiEndpoint, stringContent);
-		var response = await result.Content.ReadAsStringAsync();
+		if (result.IsSuccessStatusCode)
+		{
+			result.Dispose();
+			var apiRunsEndpoint = "https://api.github.com/repos/Aiko-IT-Systems/Traveler/actions/workflows/steam_deploy.yml/runs";
+			var res = await rest.GetAsync(apiRunsEndpoint);
+			var resJson = await res.Content.ReadAsStringAsync();
+			var resObj = JsonConvert.DeserializeObject<WorkflowRuns>(resJson)!;
+			var latestRun = resObj.Runs.First();
+			var runUrl = latestRun.HtmlUrl;
+			await waitForModal.Result.Interaction.CreateFollowupMessageAsync(
+				new DiscordFollowupMessageBuilder().WithContent($"Just kidding {DiscordEmoji.FromGuildEmote(ctx.Client, 1198333815999959162)}\n\n{"View workflow log".MaskedUrl(new(runUrl.AbsoluteUri))}"));
+			res.Dispose();
+			rest.Dispose();
+			return;
+		}
+
 		await waitForModal.Result.Interaction.CreateFollowupMessageAsync(
-			new DiscordFollowupMessageBuilder().WithContent($"Just kidding {DiscordEmoji.FromGuildEmote(ctx.Client, 1198333815999959162)}\n\n{"Workflow".MaskedUrl(new("https://github.com/Aiko-IT-Systems/Traveler/actions/workflows/steam_deploy.yml"))} trigger success state: {result.IsSuccessStatusCode} ({result.StatusCode})\n\n{response}"));
+			new DiscordFollowupMessageBuilder().WithContent($"Seems like something really went wrong this time.."));
+		result.Dispose();
+		rest.Dispose();
 	}
 
 	private static DiscordInteractionModalBuilder BuildWorkflowModal()
