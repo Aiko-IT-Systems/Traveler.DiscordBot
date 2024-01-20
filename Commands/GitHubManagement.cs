@@ -119,6 +119,7 @@ internal class GitHubManagement : ApplicationCommandsModule
 				new DiscordFollowupMessageBuilder().WithContent($"Just kidding {DiscordEmoji.FromGuildEmote(ctx.Client, 1198333815999959162)}\n\n{"View workflow log".MaskedUrl(new(runUrl.AbsoluteUri))}"));
 			res.Dispose();
 			rest.Dispose();
+			// TODO: Set a timer to check for the workflow status and update the message accordingly
 			return;
 		}
 
