@@ -34,8 +34,8 @@ public class WorkflowExecuteBody
 	/// <param name="inputs">The inputs for the workflow run.</param>
 	public WorkflowExecuteBody(string reference = "main", WorkflowInputs? inputs = null)
 	{
-		Ref = reference;
-		Inputs = inputs;
+		this.Ref = reference;
+		this.Inputs = inputs;
 	}
 }
 

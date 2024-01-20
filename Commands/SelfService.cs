@@ -65,44 +65,96 @@ internal class SelfService : ApplicationCommandsModule
 			Dictionary<int, decimal> playtimeInfos = new();
 			Dictionary<int, DiscordAttachment?> attachments = new(25)
 			{
-				{ 0, globalSave },
-				{ 1, gameSave1 },
-				{ 2, gameSave2 },
-				{ 3, gameSave3 },
-				{ 4, gameSave4 },
-				{ 5, gameSave5 },
-				{ 6, gameSave6 },
-				{ 7, gameSave7 },
-				{ 8, gameSave8 },
-				{ 9, gameSave9 },
-				{ 10, gameSave10 },
-				{ 11, gameSave11 },
-				{ 12, gameSave12 },
-				{ 13, gameSave13 },
-				{ 14, gameSave14 },
-				{ 15, gameSave15 },
-				{ 16, gameSave16 },
-				{ 17, gameSave17 },
-				{ 18, gameSave18 },
-				{ 19, gameSave19 },
-				{ 20, gameSave20 },
-				{ 21, gameSave21 },
-				{ 22, gameSave22 },
-				{ 23, gameSave23 },
-				{ 24, gameSave24 }
+				{
+					0, globalSave
+				},
+				{
+					1, gameSave1
+				},
+				{
+					2, gameSave2
+				},
+				{
+					3, gameSave3
+				},
+				{
+					4, gameSave4
+				},
+				{
+					5, gameSave5
+				},
+				{
+					6, gameSave6
+				},
+				{
+					7, gameSave7
+				},
+				{
+					8, gameSave8
+				},
+				{
+					9, gameSave9
+				},
+				{
+					10, gameSave10
+				},
+				{
+					11, gameSave11
+				},
+				{
+					12, gameSave12
+				},
+				{
+					13, gameSave13
+				},
+				{
+					14, gameSave14
+				},
+				{
+					15, gameSave15
+				},
+				{
+					16, gameSave16
+				},
+				{
+					17, gameSave17
+				},
+				{
+					18, gameSave18
+				},
+				{
+					19, gameSave19
+				},
+				{
+					20, gameSave20
+				},
+				{
+					21, gameSave21
+				},
+				{
+					22, gameSave22
+				},
+				{
+					23, gameSave23
+				},
+				{
+					24, gameSave24
+				}
 			};
 
-			foreach(var save in attachments.Where(a => a.Value != null))
+			foreach (var save in attachments.Where(a => a.Value != null))
 			{
 				var stream = await ctx.Client.RestClient.GetStreamAsync(save.Value!.Url);
-				using(StreamReader reader = new(stream))
+				using (StreamReader reader = new(stream))
 				{
 					var content = await reader.ReadToEndAsync();
 					var decoded = LZString.DecompressFromBase64(content);
-					var data = save.Key == 0 ? null : JsonConvert.DeserializeObject<JObject>(decoded, new JsonSerializerSettings() { 
-						NullValueHandling = NullValueHandling.Include,
-						Error = Handler
-					});
+					var data = save.Key == 0
+						? null
+						: JsonConvert.DeserializeObject<JObject>(decoded, new JsonSerializerSettings()
+						{
+							NullValueHandling = NullValueHandling.Include, Error = Handler
+						});
 					switch (save.Key)
 					{
 						case 0:
@@ -113,8 +165,10 @@ internal class SelfService : ApplicationCommandsModule
 							playtimeInfos.Add(save.Key, data!["system"]!["_framesOnSave"]!.ToObject<decimal>());
 							break;
 					}
+
 					reader.Close();
 				}
+
 				stream.Close();
 			}
 

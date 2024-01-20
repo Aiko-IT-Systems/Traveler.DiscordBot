@@ -27,7 +27,7 @@ internal class ConverterManagement : ApplicationCommandsModule
 
 		try
 		{
-			var filename = file.FileName.Replace(".json", "");
+			var filename = file.Filename.Replace(".json", "");
 			var stream = await ctx.Client.RestClient.GetStreamAsync(file.Url);
 			using (StreamReader reader = new(stream))
 			{
@@ -59,8 +59,8 @@ internal class SteamManagement : ApplicationCommandsModule
 	internal static async Task GetServerInfoAsync(InteractionContext ctx)
 	{
 		await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
-		var api_endpoint = "https://api.steampowered.com/ISteamWebAPIUtil/GetServerInfo/v1/?key=" + Discord.SteamPublisherKey;
-		var result = await ctx.Client.RestClient.GetStringAsync(api_endpoint);
+		var apiEndpoint = "https://api.steampowered.com/ISteamWebAPIUtil/GetServerInfo/v1/?key=" + Discord.SteamPublisherKey;
+		var result = await ctx.Client.RestClient.GetStringAsync(apiEndpoint);
 		var serverInfo = JsonConvert.DeserializeObject<ServerInfo>(result);
 		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Steam server time: {serverInfo!.ServerTimeString}\nLocal time: {DateTime.Now}"));
 	}
@@ -69,8 +69,8 @@ internal class SteamManagement : ApplicationCommandsModule
 	internal static async Task GetAppBetasAsync(InteractionContext ctx)
 	{
 		await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
-		var api_endpoint = "https://partner.steam-api.com/ISteamApps/GetAppBetas/v1/?key=" + Discord.SteamPublisherKey + "&appid=" + Discord.SteamAppId;
-		var result = await ctx.Client.RestClient.GetStringAsync(api_endpoint);
+		var apiEndpoint = "https://partner.steam-api.com/ISteamApps/GetAppBetas/v1/?key=" + Discord.SteamPublisherKey + "&appid=" + Discord.SteamAppId;
+		var result = await ctx.Client.RestClient.GetStringAsync(apiEndpoint);
 		var appBetaResult = JsonConvert.DeserializeObject<AppBetaResult>(result);
 		DiscordWebhookBuilder builder = new();
 		builder.WithContent("App beta result".Bold());
@@ -99,8 +99,8 @@ internal class SteamManagement : ApplicationCommandsModule
 	internal static async Task GetAppBuildsAsync(InteractionContext ctx, [Option("count", "Limit of returned builds")] int count = 10)
 	{
 		await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
-		var api_endpoint = "https://partner.steam-api.com/ISteamApps/GetAppBuilds/v1/?key=" + Discord.SteamPublisherKey + "&appid=" + Discord.SteamAppId + "&count=" + count;
-		var result = await ctx.Client.RestClient.GetStringAsync(api_endpoint);
+		var apiEndpoint = "https://partner.steam-api.com/ISteamApps/GetAppBuilds/v1/?key=" + Discord.SteamPublisherKey + "&appid=" + Discord.SteamAppId + "&count=" + count;
+		var result = await ctx.Client.RestClient.GetStringAsync(apiEndpoint);
 		var appBuildsResult = JsonConvert.DeserializeObject<AppBuildsResult>(result);
 		DiscordWebhookBuilder builder = new();
 		builder.WithContent("App build result".Bold());
@@ -128,9 +128,9 @@ internal class SteamManagement : ApplicationCommandsModule
 		string id;
 		if (steam_user != null)
 		{
-			var api_lookup_endpoint = "https://partner.steam-api.com/ISteamUser/ResolveVanityURL/v1/?key=" + Discord.SteamPublisherKey + "&vanityurl=" + steam_user + "&url_type=" + 1;
-			var lookup_result = await ctx.Client.RestClient.GetStringAsync(api_lookup_endpoint);
-			var vanityLookupResult = JsonConvert.DeserializeObject<VanityUrlLookupResult>(lookup_result);
+			var apiLookupEndpoint = "https://partner.steam-api.com/ISteamUser/ResolveVanityURL/v1/?key=" + Discord.SteamPublisherKey + "&vanityurl=" + steam_user + "&url_type=" + 1;
+			var lookupResult = await ctx.Client.RestClient.GetStringAsync(apiLookupEndpoint);
+			var vanityLookupResult = JsonConvert.DeserializeObject<VanityUrlLookupResult>(lookupResult);
 			if (vanityLookupResult!.Response.Success != 1)
 			{
 				await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Couldn't not resolve user ({vanityLookupResult!.Response.Success}):\n\n{vanityLookupResult!.Response.Message}"));
@@ -147,8 +147,8 @@ internal class SteamManagement : ApplicationCommandsModule
 			return;
 		}
 
-		var api_endpoint = "https://partner.steam-api.com/ISteamUser/CheckAppOwnership/v2/?key=" + Discord.SteamPublisherKey + "&steamid=" + id + "&appid=" + Discord.SteamAppId;
-		var result = await ctx.Client.RestClient.GetStringAsync(api_endpoint);
+		var apiEndpoint = "https://partner.steam-api.com/ISteamUser/CheckAppOwnership/v2/?key=" + Discord.SteamPublisherKey + "&steamid=" + id + "&appid=" + Discord.SteamAppId;
+		var result = await ctx.Client.RestClient.GetStringAsync(apiEndpoint);
 		var appOwnershipRes = JsonConvert.DeserializeObject<AppOwnershipResult>(result);
 		DiscordEmbedBuilder builder = new();
 		builder.WithColor(appOwnershipRes!.AppOwnership.OwnsApp ? DiscordColor.Green : DiscordColor.Red);
@@ -166,18 +166,18 @@ internal class SteamManagement : ApplicationCommandsModule
 	internal static async Task GetAppBuildAsync(InteractionContext ctx, [Option("build", "The build to get", true), Autocomplete(typeof(SteamCommitAutocomplete))] string build)
 	{
 		await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
-		var api_endpoint = "https://partner.steam-api.com/ISteamApps/GetAppBuilds/v1/?key=" + Discord.SteamPublisherKey + "&appid=" + Discord.SteamAppId;
-		var result = await ctx.Client.RestClient.GetStringAsync(api_endpoint);
+		var apiEndpoint = "https://partner.steam-api.com/ISteamApps/GetAppBuilds/v1/?key=" + Discord.SteamPublisherKey + "&appid=" + Discord.SteamAppId;
+		var result = await ctx.Client.RestClient.GetStringAsync(apiEndpoint);
 		var appBuildsResult = JsonConvert.DeserializeObject<AppBuildsResult>(result);
 		DiscordWebhookBuilder builder = new();
 		if (appBuildsResult!.Response.Result == 1)
 		{
-			var target_build = appBuildsResult!.Response.Builds.First(x => x.Key == build).Value;
+			var targetBuild = appBuildsResult!.Response.Builds.First(x => x.Key == build).Value;
 			DiscordEmbedBuilder embedBuilder = new();
 			embedBuilder.WithTitle(build);
-			embedBuilder.WithDescription(target_build.Description);
-			embedBuilder.AddField(new("Creator", $"{target_build.AccountIdCreator}"));
-			embedBuilder.AddField(new("Creation Time", $"{DateTimeOffset.FromUnixTimeSeconds(target_build.CreationTime).Timestamp(TimestampFormat.RelativeTime)}"));
+			embedBuilder.WithDescription(targetBuild.Description);
+			embedBuilder.AddField(new("Creator", $"{targetBuild.AccountIdCreator}"));
+			embedBuilder.AddField(new("Creation Time", $"{DateTimeOffset.FromUnixTimeSeconds(targetBuild.CreationTime).Timestamp(TimestampFormat.RelativeTime)}"));
 			builder.WithContent("App build result".Bold());
 			builder.AddEmbed(embedBuilder.Build());
 			await ctx.EditResponseAsync(builder);
@@ -202,7 +202,7 @@ internal class SteamManagement : ApplicationCommandsModule
 	internal static async Task PromoteAppBuildAsync(InteractionContext ctx, [Option("build_id", "The build to promote", true), Autocomplete(typeof(SteamCommitAutocomplete))] string build_id, [Option("branch", "The branch to promote the build to. Defaults to 'public'")] string branch = "public", [Option("info", "Build description")] string? info = null)
 	{
 		await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
-		var api_endpoint = "https://partner.steam-api.com/ISteamApps/SetAppBuildLive/v1/";
+		var apiEndpoint = "https://partner.steam-api.com/ISteamApps/SetAppBuildLive/v1/";
 
 		var data = new List<KeyValuePair<string, string>>()
 		{
@@ -210,10 +210,10 @@ internal class SteamManagement : ApplicationCommandsModule
 		};
 		if (info != null)
 			data.Add(new("description", info));
-		var result = await ctx.Client.RestClient.PostAsync(api_endpoint, new FormUrlEncodedContent(data));
+		var result = await ctx.Client.RestClient.PostAsync(apiEndpoint, new FormUrlEncodedContent(data));
 		var res = await result.Content.ReadAsStringAsync();
-		var promotion_result = JsonConvert.DeserializeObject<AppBuildPromotionResult>(res);
-		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Publishing of {build_id} to {branch} success: {result.IsSuccessStatusCode}\n\n{(promotion_result!.Response.Message != "" ? "Response message: " + promotion_result!.Response.Message : "")}"));
+		var promotionResult = JsonConvert.DeserializeObject<AppBuildPromotionResult>(res);
+		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Publishing of {build_id} to {branch} success: {result.IsSuccessStatusCode}\n\n{(promotionResult!.Response.Message != "" ? "Response message: " + promotionResult!.Response.Message : "")}"));
 	}
 }
 
@@ -230,12 +230,12 @@ internal class SteamCommitAutocomplete : IAutocompleteProvider
 			}
 			else
 			{
-				var take_25 = Discord.AppBuilds.Values.Where(x => x.Description.ToLower().Contains(((string)ctx.FocusedOption.Value).ToLower()) || x.BuildId.ToString().ToLower().Contains(((string)ctx.FocusedOption.Value).ToLower()));
-				if (!take_25.Any())
+				var take25 = Discord.AppBuilds.Values.Where(x => x.Description.ToLower().Contains(((string)ctx.FocusedOption.Value).ToLower()) || x.BuildId.ToString().ToLower().Contains(((string)ctx.FocusedOption.Value).ToLower()));
+				if (!take25.Any())
 					return Array.Empty<DiscordApplicationCommandAutocompleteChoice>().ToList();
-				else if (take_25.Any())
+				else if (take25.Any())
 				{
-					var collection = take_25.Take(25).Select(x => new DiscordApplicationCommandAutocompleteChoice($"{x.BuildId} - {x.Description}", x.BuildId.ToString())).ToList();
+					var collection = take25.Take(25).Select(x => new DiscordApplicationCommandAutocompleteChoice($"{x.BuildId} - {x.Description}", x.BuildId.ToString())).ToList();
 					return collection;
 				}
 				else
@@ -252,8 +252,8 @@ internal class SteamCommitAutocomplete : IAutocompleteProvider
 
 	internal static async Task UpdateBuildsAsync(DiscordClient client)
 	{
-		var api_endpoint = "https://partner.steam-api.com/ISteamApps/GetAppBuilds/v1/?key=" + Discord.SteamPublisherKey + "&appid=" + Discord.SteamAppId;
-		var result = await client.RestClient.GetStringAsync(api_endpoint);
+		var apiEndpoint = "https://partner.steam-api.com/ISteamApps/GetAppBuilds/v1/?key=" + Discord.SteamPublisherKey + "&appid=" + Discord.SteamAppId;
+		var result = await client.RestClient.GetStringAsync(apiEndpoint);
 		var appBuildsResult = JsonConvert.DeserializeObject<AppBuildsResult>(result);
 		Discord.AppBuilds = appBuildsResult!.Response.Builds;
 	}

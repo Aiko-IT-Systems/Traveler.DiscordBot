@@ -4,11 +4,9 @@ namespace Traveler.DiscordBot.Entities.Steam;
 
 public class ServerInfo
 {
-	[JsonProperty("servertime")]
-	public long ServerTime { get; set; }
+	[JsonProperty("servertime")] public long ServerTime { get; set; }
 
-	[JsonProperty("servertimestring")]
-	public string ServerTimeString { get; set; }
+	[JsonProperty("servertimestring")] public string ServerTimeString { get; set; }
 }
 
 public class VanityUrlLookupResult
@@ -89,7 +87,7 @@ public class AppBeta
 	public bool RequirePassword { get; set; }
 
 	[JsonProperty("ReqLocalCS", NullValueHandling = NullValueHandling.Ignore)]
-	public bool ReqLocalCS { get; set; }
+	public bool ReqLocalCs { get; set; }
 }
 
 public class AppBuildsResult

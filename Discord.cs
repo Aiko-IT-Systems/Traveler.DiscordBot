@@ -1,11 +1,10 @@
-﻿using System.Reflection;
+using System.Reflection;
 
 using DisCatSharp;
 using DisCatSharp.ApplicationCommands;
 using DisCatSharp.Enums;
 using DisCatSharp.Interactivity;
 using DisCatSharp.Interactivity.Enums;
-using DisCatSharp.Interactivity.EventHandling;
 using DisCatSharp.Interactivity.Extensions;
 
 using Microsoft.Extensions.Logging;
@@ -36,7 +35,7 @@ public class Discord : IDisposable
 		SteamAppId = steam_app_id;
 		GitHubApiKey = github_api;
 
-		Configuration = new()
+		this.Configuration = new()
 		{
 			Token = bot_token,
 			TokenType = TokenType.Bot,
@@ -44,11 +43,11 @@ public class Discord : IDisposable
 			MessageCacheSize = 2048,
 			MinimumLogLevel = LogLevel.Debug,
 			Intents = DiscordIntents.All,
-			UseCanary = true,
+			ApiChannel = ApiChannel.Canary,
 			ReconnectIndefinitely = true
 		};
 
-		InteractivityConfiguration = new()
+		this.InteractivityConfiguration = new()
 		{
 			Timeout = TimeSpan.FromMinutes(2),
 			PaginationBehaviour = PaginationBehaviour.WrapAround,
@@ -56,7 +55,7 @@ public class Discord : IDisposable
 			PollBehaviour = PollBehaviour.DeleteEmojis,
 			AckPaginationButtons = true,
 			ButtonBehavior = ButtonPaginationBehavior.Disable,
-			PaginationButtons = new PaginationButtons()
+			PaginationButtons = new()
 			{
 				SkipLeft = new(ButtonStyle.Primary, "pgb-skip-left", "First", false, new("⏮️")),
 				Left = new(ButtonStyle.Primary, "pgb-left", "Previous", false, new("◀️")),
@@ -68,60 +67,59 @@ public class Discord : IDisposable
 			ResponseBehavior = InteractionResponseBehavior.Ignore
 		};
 
-		ApplicationCommandsConfiguration = new()
+		this.ApplicationCommandsConfiguration = new()
 		{
 			AutoDefer = false,
 			CheckAllGuilds = false,
 			DebugStartup = false,
 			EnableLocalization = false,
-			EnableDefaultHelp = false,
-			ManualOverride = false
+			EnableDefaultHelp = false
 		};
 
-		Client = new(Configuration);
-		InteractivityExtension = Client.UseInteractivity(InteractivityConfiguration);
-		ApplicationCommandsExtension = Client.UseApplicationCommands(ApplicationCommandsConfiguration);
+		this.Client = new(this.Configuration);
+		this.InteractivityExtension = this.Client.UseInteractivity(this.InteractivityConfiguration);
+		this.ApplicationCommandsExtension = this.Client.UseApplicationCommands(this.ApplicationCommandsConfiguration);
 
-		RegisterEvents();
-		RegisterCommands();
+		this.RegisterEvents();
+		this.RegisterCommands();
 	}
 
 	private void RegisterEvents()
 	{
-		Client.Logger.LogDebug("RegisterEvents is not yet implemented");
-		Client.Logger.LogInformation("RegisterEvents is not yet implemented");
+		this.Client.Logger.LogDebug("RegisterEvents is not yet implemented");
+		this.Client.Logger.LogInformation("RegisterEvents is not yet implemented");
 	}
 
 	private void RegisterCommands()
 	{
-		Client.Logger.LogInformation("Registering guild commands");
-		ApplicationCommandsExtension.RegisterGuildCommands(Assembly.GetExecutingAssembly(), 858428656786341909);
+		this.Client.Logger.LogInformation("Registering guild commands");
+		this.ApplicationCommandsExtension.RegisterGuildCommands(Assembly.GetExecutingAssembly(), 858428656786341909);
 	}
 
 	public void Dispose()
 	{
-		Client.Dispose();
+		this.Client.Dispose();
 
 #pragma warning disable CS8625
-		InteractivityExtension = null;
-		ApplicationCommandsExtension = null;
+		this.InteractivityExtension = null;
+		this.ApplicationCommandsExtension = null;
 
-		InteractivityConfiguration = null;
-		ApplicationCommandsConfiguration = null;
-		Configuration = null;
+		this.InteractivityConfiguration = null;
+		this.ApplicationCommandsConfiguration = null;
+		this.Configuration = null;
 
-		Client = null;
+		this.Client = null;
 #pragma warning restore CS8625
 		GC.SuppressFinalize(this);
 	}
 
 	public async Task StartAsync()
 	{
-		await Client.ConnectAsync();
+		await this.Client.ConnectAsync();
 		while (!ShutdownRequest.IsCancellationRequested)
 			await Task.Delay(500);
-		await Client.UpdateStatusAsync(null, DisCatSharp.Entities.UserStatus.Offline);
-		await Client.DisconnectAsync();
-		Dispose();
+		await this.Client.UpdateStatusAsync(null, DisCatSharp.Entities.UserStatus.Offline);
+		await this.Client.DisconnectAsync();
+		this.Dispose();
 	}
 }
