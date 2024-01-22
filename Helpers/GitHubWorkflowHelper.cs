@@ -24,7 +24,7 @@ using DisCatSharp.Entities;
 using DisCatSharp.Enums;
 using DisCatSharp.EventArgs;
 
-namespace Traveler.DiscordBot;
+namespace Traveler.DiscordBot.Helpers;
 
 internal sealed class GitHubWorkflowHelper
 {

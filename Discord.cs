@@ -38,6 +38,7 @@ using Octokit.Internal;
 
 using Traveler.DiscordBot.Entities;
 using Traveler.DiscordBot.Entities.Config;
+using Traveler.DiscordBot.Helpers;
 
 namespace Traveler.DiscordBot;
 

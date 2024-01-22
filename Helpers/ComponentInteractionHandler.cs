@@ -25,9 +25,7 @@ using DisCatSharp.Enums;
 using DisCatSharp.EventArgs;
 using DisCatSharp.Interactivity.EventHandling;
 
-using Traveler.DiscordBot.Helpers;
-
-namespace Traveler.DiscordBot;
+namespace Traveler.DiscordBot.Helpers;
 
 internal sealed class ComponentInteractionHandler
 {
@@ -42,11 +40,11 @@ internal sealed class ComponentInteractionHandler
 		}
 
 		// Handle other components
-		if (!Helpers.Helpers.GitHubWorkflowActionRegex().IsMatch(args.Id))
+		if (!Helpers.GitHubWorkflowActionRegex().IsMatch(args.Id))
 			return;
 
 		await args.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage);
-		var workflowActionInstruction = Helpers.Helpers.GitHubWorkflowActionRegex().Match(args.Id);
+		var workflowActionInstruction = Helpers.GitHubWorkflowActionRegex().Match(args.Id);
 		var workflowAction = workflowActionInstruction.Groups["action"].Value;
 		var workflowRunId = Convert.ToInt64(workflowActionInstruction.Groups["runId"].Value);
 
