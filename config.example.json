@@ -1,0 +1,17 @@
+{
+	"discord": {
+		"bot_token": "",
+		"guild_id": ""
+	},
+	"steam": {
+		"public_web_api_key": "",
+		"publisher_web_api_key": "",
+		"app_id": 123456
+	},
+	"github": {
+		"api_key": "",
+		"owner": "",
+		"repository": "",
+		"deploy_workflow_name": ""
+	}
+}
