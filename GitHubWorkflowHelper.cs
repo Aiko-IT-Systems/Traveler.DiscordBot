@@ -1,4 +1,4 @@
-﻿// This file is part of the AITSYS.
+// This file is part of the AITSYS.
 //
 // Copyright (c) AITSYS
 //
@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using DisCatSharp.Entities;
+using DisCatSharp.Enums;
 using DisCatSharp.EventArgs;
 
 namespace Traveler.DiscordBot;
@@ -35,6 +36,9 @@ internal sealed class GitHubWorkflowHelper
 
 	internal static async Task RerunWorkflowAsync(ComponentInteractionCreateEventArgs args, long workflowRunId)
 	{
+		var builder = new DiscordWebhookBuilder().AddEmbeds(args.Message.Embeds);
+		builder.AddComponents(new DiscordButtonComponent(ButtonStyle.Danger, $"gh-wf-cancel-{workflowRunId}", "Cancel Workflow", true), new DiscordButtonComponent(ButtonStyle.Primary, $"gh-wf-rerun-{workflowRunId}", "Re-run Workflow", true), new DiscordLinkButtonComponent($"https://github.com/{Discord.Config.Github.Owner}/{Discord.Config.Github.Repository}/actions/runs/{workflowRunId}/attempts/2", "View Re-run Logs"));
+		await args.Interaction.EditOriginalResponseAsync(builder);
 		await Discord.ActionsChecker.ActionsWorkflowRunsClient.Rerun(Discord.Config.Github.Owner, Discord.Config.Github.Repository, workflowRunId);
 		await args.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder().WithContent("Workflow rerun initiated. This won't be tracked currently.").AsEphemeral());
 	}
