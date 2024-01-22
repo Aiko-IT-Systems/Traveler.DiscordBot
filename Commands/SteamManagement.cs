@@ -52,6 +52,7 @@ internal class ConverterManagement : ApplicationCommandsModule
 		{
 			var filename = file.Filename.Replace(".json", "");
 			var stream = await ctx.Client.RestClient.GetStreamAsync(file.Url);
+
 			using (StreamReader reader = new(stream))
 			{
 				var content = await reader.ReadToEndAsync();
@@ -97,6 +98,7 @@ internal class SteamManagement : ApplicationCommandsModule
 		var appBetaResult = JsonConvert.DeserializeObject<AppBetaResult>(result);
 		DiscordWebhookBuilder builder = new();
 		builder.WithContent("App beta result".Bold());
+
 		if (appBetaResult!.Response.Result == 1)
 			foreach (var beta in appBetaResult.Response.Betas)
 			{
@@ -127,9 +129,11 @@ internal class SteamManagement : ApplicationCommandsModule
 		var appBuildsResult = JsonConvert.DeserializeObject<AppBuildsResult>(result);
 		DiscordWebhookBuilder builder = new();
 		builder.WithContent("App build result".Bold());
+
 		if (appBuildsResult!.Response.Result == 1)
 		{
 			await ctx.EditResponseAsync(builder);
+
 			foreach (var build in appBuildsResult.Response.Builds.Take(count))
 			{
 				DiscordEmbedBuilder embedBuilder = new();
@@ -149,11 +153,13 @@ internal class SteamManagement : ApplicationCommandsModule
 	{
 		await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
 		string id;
+
 		if (steamUser != null)
 		{
 			var apiLookupEndpoint = "https://partner.steam-api.com/ISteamUser/ResolveVanityURL/v1/?key=" + Discord.Config.Steam.PublisherWebApiKey + "&vanityurl=" + steamUser + "&url_type=" + 1;
 			var lookupResult = await ctx.Client.RestClient.GetStringAsync(apiLookupEndpoint);
 			var vanityLookupResult = JsonConvert.DeserializeObject<VanityUrlLookupResult>(lookupResult);
+
 			if (vanityLookupResult!.Response.Success != 1)
 			{
 				await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Couldn't not resolve user ({vanityLookupResult!.Response.Success}):\n\n{vanityLookupResult!.Response.Message}"));
@@ -193,6 +199,7 @@ internal class SteamManagement : ApplicationCommandsModule
 		var result = await ctx.Client.RestClient.GetStringAsync(apiEndpoint);
 		var appBuildsResult = JsonConvert.DeserializeObject<AppBuildsResult>(result);
 		DiscordWebhookBuilder builder = new();
+
 		if (appBuildsResult!.Response.Result == 1)
 		{
 			var targetBuild = appBuildsResult!.Response.Builds.First(x => x.Key == build).Value;

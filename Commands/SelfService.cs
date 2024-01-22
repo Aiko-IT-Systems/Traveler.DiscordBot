@@ -170,6 +170,7 @@ internal class SelfService : ApplicationCommandsModule
 			foreach (var save in attachments.Where(a => a.Value != null))
 			{
 				var stream = await ctx.Client.RestClient.GetStreamAsync(save.Value!.Url);
+
 				using (StreamReader reader = new(stream))
 				{
 					var content = await reader.ReadToEndAsync();
@@ -178,9 +179,9 @@ internal class SelfService : ApplicationCommandsModule
 						? null
 						: JsonConvert.DeserializeObject<JObject>(decoded, new JsonSerializerSettings
 						{
-							NullValueHandling = NullValueHandling.Include,
-							Error = Handler
+							NullValueHandling = NullValueHandling.Include, Error = Handler
 						});
+
 					switch (save.Key)
 					{
 						case 0:

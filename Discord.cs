@@ -76,7 +76,7 @@ public sealed class Discord : IDisposable
 			PaginationBehaviour = PaginationBehaviour.WrapAround,
 			PaginationDeletion = PaginationDeletion.DeleteEmojis,
 			PollBehaviour = PollBehaviour.DeleteEmojis,
-			AckPaginationButtons = true,
+			AckPaginationButtons = false,
 			ButtonBehavior = ButtonPaginationBehavior.Disable,
 			PaginationButtons = new()
 			{
@@ -87,15 +87,11 @@ public sealed class Discord : IDisposable
 				SkipRight = new(ButtonStyle.Primary, PaginationButtons.SKIP_RIGHT_CUSTOM_ID, "Last", false, new("⏭️"))
 			},
 			ResponseMessage = "Something went wrong.",
-			ResponseBehavior = InteractionResponseBehavior.Ignore
+			ResponseBehavior = InteractionResponseBehavior.Respond
 		};
 
 		this.ApplicationCommandsConfiguration = new()
 		{
-			AutoDefer = false,
-			CheckAllGuilds = false,
-			DebugStartup = false,
-			EnableLocalization = false,
 			EnableDefaultHelp = false
 		};
 
@@ -115,9 +111,8 @@ public sealed class Discord : IDisposable
 
 	private void RegisterEvents()
 	{
-		// No
-		// ReSharper disable once ArrangeMethodOrOperatorBody
-		this.Client.Logger.LogDebug("RegisterEvents is not yet implemented");
+		this.Client.Logger.LogInformation("Registering events");
+		this.Client.ComponentInteractionCreated += ComponentInteractionHandler.HandleComponentInteractionAsync;
 	}
 
 	private void RegisterCommands()

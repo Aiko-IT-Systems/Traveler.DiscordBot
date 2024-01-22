@@ -37,7 +37,7 @@ namespace Traveler.DiscordBot.Helpers;
 
 internal static partial class Helpers
 {
-	[GeneratedRegex(@"gh-wf-(?<action>\w+)-(?<runid>\d+)", RegexOptions.Compiled | RegexOptions.ECMAScript)]
+	[GeneratedRegex(@"gh-wf-(?<action>\w+)-(?<runId>\d+)", RegexOptions.Compiled | RegexOptions.ECMAScript)]
 	internal static partial Regex GitHubWorkflowActionRegex();
 
 	internal static string ToHumanReadableString(this string str)
@@ -72,6 +72,7 @@ internal static partial class Helpers
 		DiscordEmbedBuilder embedBuilder = new();
 		embedBuilder.WithTitle("Execute Workflow with following data?");
 		embedBuilder.WithDescription("Description:".Bold() + "\n" + body.Inputs!["build_description"].ToString()?.BlockCode("md"));
+
 		foreach (var input in body.Inputs!)
 		{
 			if (input.Key == "build_description")
@@ -134,6 +135,7 @@ internal static partial class Helpers
 				: $"{step.Status.StringValue.ToHumanReadableString()} (Started {step.StartedAt?.Timestamp() ?? "not yet".Italic()})"
 			));
 		builder.WithFooter($"Run started by {run.TriggeringActor.Login}", run.TriggeringActor.AvatarUrl);
+		webhookBuilder.AddComponents(new DiscordButtonComponent(ButtonStyle.Danger, $"gh-wf-cancel-{run.Id}", "Cancel Workflow", run.Status.Value is WorkflowRunStatus.Completed), new DiscordButtonComponent(ButtonStyle.Primary, $"gh-wf-rerun-{run.Id}", "Re-run Workflow", run.Status.Value is not WorkflowRunStatus.Completed || run.Conclusion?.Value is WorkflowRunConclusion.Success));
 		return webhookBuilder.AddEmbed(builder.Build());
 	}
 

@@ -99,6 +99,7 @@ internal class GitHubManagement : ApplicationCommandsModule
 	{
 		var modal = await ctx.BuildAndSendWorkflowModal();
 		var waitForModal = await ctx.Client.GetInteractivity().WaitForModalAsync(modal.CustomId, TimeSpan.FromMinutes(2));
+
 		if (waitForModal.TimedOut)
 		{
 			await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("Modal timed out!").AsEphemeral());
@@ -135,6 +136,7 @@ internal class GitHubManagement : ApplicationCommandsModule
 		var confirmationMessage = await waitForModal.Result.Interaction.EditOriginalResponseAsync(confirmation);
 
 		var waitForButton = await ctx.Client.GetInteractivity().WaitForButtonAsync(confirmationMessage, x => x.User.Id == ctx.User.Id && x.Id == confirmation.Components[0].Components.First().CustomId, TimeSpan.FromSeconds(30));
+
 		if (waitForButton.TimedOut)
 		{
 			await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("Button timed out!").AsEphemeral());
