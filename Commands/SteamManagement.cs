@@ -51,7 +51,7 @@ internal class ConverterManagement : ApplicationCommandsModule
 		try
 		{
 			var filename = file.Filename.Replace(".json", "");
-			var stream = await ctx.Client.RestClient.GetStreamAsync(file.Url);
+			var stream = await ctx.Client.RestClient.GetStreamAsync(file.Url.ToUri());
 
 			using (StreamReader reader = new(stream))
 			{
