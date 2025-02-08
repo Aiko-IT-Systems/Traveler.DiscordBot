@@ -169,7 +169,7 @@ internal class SelfService : ApplicationCommandsModule
 
 			foreach (var save in attachments.Where(a => a.Value != null))
 			{
-				var stream = await ctx.Client.RestClient.GetStreamAsync(save.Value!.Url);
+				var stream = await ctx.Client.RestClient.GetStreamAsync(save.Value!.Url.ToUri());
 
 				using (StreamReader reader = new(stream))
 				{

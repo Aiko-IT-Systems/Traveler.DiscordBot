@@ -135,7 +135,7 @@ internal class GitHubManagement : ApplicationCommandsModule
 		var confirmation = githubWorkflowData.BuildConfirmationEmbed();
 		var confirmationMessage = await waitForModal.Result.Interaction.EditOriginalResponseAsync(confirmation);
 
-		var waitForButton = await ctx.Client.GetInteractivity().WaitForButtonAsync(confirmationMessage, x => x.User.Id == ctx.User.Id && x.Id == confirmation.Components[0].Components.First().CustomId, TimeSpan.FromSeconds(30));
+		var waitForButton = await ctx.Client.GetInteractivity().WaitForButtonAsync(confirmationMessage, x => x.User.Id == ctx.User.Id && x.Id == (confirmation.Components[0] as DiscordActionRowComponent)!.Components.First().CustomId, TimeSpan.FromSeconds(30));
 
 		if (waitForButton.TimedOut)
 		{
